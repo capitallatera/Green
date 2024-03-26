@@ -27,12 +27,12 @@ const ListItem = ({id, name, rate, quantity}: Item) => {
   const dispatch = useAppDispatch();
 
   const handleNavigation = async () => {
-    const payloadBuilder = {id: id};
+    const payloadBuilder = {id: id, isDelete: false};
     setLoad(true);
     const {payload} = await dispatch(singleInventory(payloadBuilder));
     setLoad(false);
 
-    if (payload?._id) {
+    if (payload?.id) {
       navigation.navigate('Edit', {payload});
     } else {
       // Display Toast

@@ -19,53 +19,56 @@ import {
 } from '../../redux/module/vegetable';
 import {addInventory, inventoryState} from '../../redux/module/inventory';
 import {useNavigation} from '@react-navigation/native';
+import {nanoid} from 'nanoid';
 
 const calculateWidth = (screenWidth: number, percentage: number) =>
   screenWidth * percentage;
 // const calculateHeight = (screenHeight: number, percentage: number) =>
 //   screenHeight * percentage;
 
-type Data = {_id: string; name: string; isDisclosable: boolean};
-type ItemObject = {
-  isDisplayed: boolean;
-  data: Data[];
-};
+// type Data = {_id: string; name: string; isDisclosable: boolean};
+// type ItemObject = {
+//   isDisplayed: boolean;
+//   data: Data[];
+// };
 
 type AddNew = {
-  name: string;
+  id: string;
+  vegetable: string;
   rate: number | null;
   quantity: number | null;
 };
 
 const AddItems = () => {
   const {width} = useWindowDimensions();
-  const [selected, setSelected] = useState('');
-  const [isModal, setModal] = useState<boolean>(false);
+  // const [selected, setSelected] = useState('');
+  // const [isModal, setModal] = useState<boolean>(false);
   const [addNew, setAddNew] = useState<AddNew>({
-    name: '',
+    id: '',
+    vegetable: '',
     rate: null,
     quantity: null,
   });
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  const {data: vegetables} = useAppSelector(vegetableState);
+  // const {data: vegetables} = useAppSelector(vegetableState);
   const {load: inventory_load} = useAppSelector(inventoryState);
 
-  const [items, setItems] = useState<ItemObject>({
-    isDisplayed: false,
-    data: [],
-  });
+  // const [items, setItems] = useState<ItemObject>({
+  //   isDisplayed: false,
+  //   data: [],
+  // });
 
   const widthDimension = calculateWidth(width, 0.8);
   // const heightDimension = calculateWidth(height, 0.6);
 
-  const handleItemSelect = (data: VegetableData, type: string) => {
-    if (type === 'press') {
-      setSelected(data.name);
-      handleInputs('name', data.name);
-      setItems(prev => ({...prev, isDisplayed: false}));
-    }
-  };
+  // const handleItemSelect = (data: VegetableData, type: string) => {
+  //   if (type === 'press') {
+  //     setSelected(data.name);
+  //     handleInputs('name', data.name);
+  //     setItems(prev => ({...prev, isDisplayed: false}));
+  //   }
+  // };
 
   // const handleDelete = async (id: string) => {
   //   const payload = {id};
@@ -76,14 +79,14 @@ const AddItems = () => {
     await dispatch(getAllData());
   }, [dispatch]);
 
-  const handleAdd = async (name: string) => {
-    const payload = {name};
-    await dispatch(addVegetable(payload));
-    setModal(false);
-  };
+  // const handleAdd = async (name: string) => {
+  //   const payload = {name};
+  //   await dispatch(addVegetable(payload));
+  //   setModal(false);
+  // };
 
   const handleAddInventory = async () => {
-    const payload = addNew;
+    const payload = {...addNew, id: nanoid()};
     await dispatch(addInventory(payload));
     // Resolve navigate error
     navigation.navigate('List');
@@ -97,24 +100,24 @@ const AddItems = () => {
     fetchVegetable();
   }, [fetchVegetable]);
 
-  useEffect(() => {
-    const modifiedVegetable =
-      vegetables.map(item => ({
-        ...item,
-        isDisclosable: false,
-      })) || [];
-    setItems((prev: any) => ({...prev, data: modifiedVegetable}));
-  }, [vegetables, setItems]);
+  // useEffect(() => {
+  //   const modifiedVegetable =
+  //     vegetables.map(item => ({
+  //       ...item,
+  //       isDisclosable: false,
+  //     })) || [];
+  //   setItems((prev: any) => ({...prev, data: modifiedVegetable}));
+  // }, [vegetables, setItems]);
 
-  const displayItems = items.isDisplayed
-    ? renderItem(
-        items.data,
-        widthDimension,
-        handleItemSelect,
-        setModal,
-        setItems,
-      )
-    : null;
+  // const displayItems = items.isDisplayed
+  //   ? renderItem(
+  //       items.data,
+  //       widthDimension,
+  //       handleItemSelect,
+  //       setModal,
+  //       setItems,
+  //     )
+  //   : null;
 
   const addStyle = {
     alignItems: 'center',
@@ -127,20 +130,9 @@ const AddItems = () => {
       <TextInput
         style={{...styles.dropdown, width: widthDimension}}
         placeholder="Vegetable"
-        value={selected}
-        editable={!items.isDisplayed}
-        onPressIn={() => {
-          setSelected('');
-          setItems(item => ({...item, isDisplayed: true}));
-        }}
+        inputMode="text"
+        onChangeText={value => handleInputs('vegetable', value)}
       />
-      {items.isDisplayed ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.scrollableItems}>
-          {displayItems}
-        </ScrollView>
-      ) : null}
 
       <TextInput
         style={{...styles.dropdown, width: widthDimension}}
@@ -165,11 +157,6 @@ const AddItems = () => {
           <Text style={styles.addSize}>Add</Text>
         )}
       </TouchableOpacity>
-      <AddItemModal
-        visible={isModal}
-        handleAdd={handleAdd}
-        setModal={setModal}
-      />
     </SafeAreaView>
   );
 };
@@ -253,51 +240,51 @@ const styles = StyleSheet.create({
   addSize: {fontSize: 20},
 });
 
-type VegetableData = {
-  _id: string;
-  name: string;
-  isDisclosable: boolean;
-};
+// type VegetableData = {
+//   _id: string;
+//   name: string;
+//   isDisclosable: boolean;
+// };
 
-const renderItem = (
-  data: VegetableData[],
-  widthDimension: number,
-  handleItemSelect: (i: VegetableData, t: string) => void,
-  setModal: (b: boolean) => void,
-  setItems: (i: ItemObject) => void,
-) => {
-  const containRender = {
-    width: widthDimension,
-    position: 'relative',
-  };
+// const renderItem = (
+//   data: VegetableData[],
+//   widthDimension: number,
+//   handleItemSelect: (i: VegetableData, t: string) => void,
+//   setModal: (b: boolean) => void,
+//   setItems: (i: ItemObject) => void,
+// ) => {
+//   const containRender = {
+//     width: widthDimension,
+//     position: 'relative',
+//   };
 
-  return (
-    <View style={[styles.dropdown_list, containRender]}>
-      {data.map(item => {
-        const {_id, name} = item;
-        return (
-          <View key={_id}>
-            <Text
-              key={_id}
-              style={styles.pills}
-              onPress={() => handleItemSelect(item, 'press')}>
-              {name}
-            </Text>
-          </View>
-        );
-      })}
-      <TouchableOpacity style={styles.add} onPressIn={() => setModal(true)}>
-        <Text>+</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.close, styles.rotateClose]}
-        onPressIn={() => {
-          setItems((item: ItemObject) => {
-            return {...item, isDisplayed: false};
-          });
-        }}>
-        <Text style={styles.plusColor}>+</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+//   return (
+//     <View style={[styles.dropdown_list, containRender]}>
+//       {data?.map(item => {
+//         const {_id, name} = item;
+//         return (
+//           <View key={_id}>
+//             <Text
+//               key={_id}
+//               style={styles.pills}
+//               onPress={() => handleItemSelect(item, 'press')}>
+//               {name}
+//             </Text>
+//           </View>
+//         );
+//       }) || null}
+//       <TouchableOpacity style={styles.add} onPressIn={() => setModal(true)}>
+//         <Text>+</Text>
+//       </TouchableOpacity>
+//       <TouchableOpacity
+//         style={[styles.close, styles.rotateClose]}
+//         onPressIn={() => {
+//           setItems((item: ItemObject) => {
+//             return {...item, isDisplayed: false};
+//           });
+//         }}>
+//         <Text style={styles.plusColor}>+</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };

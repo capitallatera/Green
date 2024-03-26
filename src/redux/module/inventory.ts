@@ -1,10 +1,11 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {RootState} from '../store';
 import {appAxios} from '../axios';
+import {handleParams} from '../../utils/params';
 
 type Data = {
-  _id: string;
-  name: string;
+  id: string;
+  vegetable: string;
   rate: string | number | null;
   quantity: string | number | null;
 };
@@ -16,14 +17,15 @@ export const getAllData = createAsyncThunk('inventory/get_All', async () => {
 });
 
 type add_Data = {
-  name: string;
+  id: string;
+  vegetable: string;
   rate: number | null;
   quantity: number | null;
 };
 export const addInventory = createAsyncThunk(
   'inventory/add',
   async (payload: add_Data, {dispatch}) => {
-    const response = await appAxios('post', '/inventory', payload);
+    const response = await appAxios('post', '', payload);
     await dispatch(getAllData());
     return response;
   },
@@ -31,11 +33,12 @@ export const addInventory = createAsyncThunk(
 
 type single_Data = {
   id: string;
+  isDelete: boolean;
 };
 export const singleInventory = createAsyncThunk(
   'inventory/single',
   async (payload: single_Data) => {
-    const response = await appAxios('get', `/inventory/${payload.id}`);
+    const response = await appAxios('get', `${handleParams(payload)}`);
     return response;
   },
 );
@@ -43,7 +46,8 @@ export const singleInventory = createAsyncThunk(
 export const editInventory = createAsyncThunk(
   'inventory/edit',
   async (payload: Data, {dispatch}) => {
-    const response = await appAxios('put', '/inventory', payload);
+    // update using excel
+    const response = await appAxios('post', '', payload);
     await dispatch(getAllData());
     return response;
   },
@@ -51,11 +55,13 @@ export const editInventory = createAsyncThunk(
 
 type delete_Data = {
   id: number | string;
+  isDelete: boolean;
 };
 export const deleteInventory = createAsyncThunk(
   'inventory/delete',
-  async (payload: delete_Data, {dispatch}) => {
-    const response = await appAxios('delete', '/inventory', payload);
+  async (params: delete_Data, {dispatch}) => {
+    // get method using excel
+    const response = await appAxios('get', `${handleParams(params)}`);
     await dispatch(getAllData());
     return response;
   },
@@ -66,8 +72,8 @@ const initialState: InitialState = {
   load: false,
   error: {},
   single: {
-    _id: '',
-    name: '',
+    id: '',
+    vegetable: '',
     rate: null,
     quantity: null,
   },

@@ -63,15 +63,17 @@ const ListItems = () => {
       </Pressable>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {data?.map(({_id, name, rate, quantity}) => (
-          <ListItem
-            key={_id}
-            id={_id}
-            name={name}
-            rate={rate}
-            quantity={quantity}
-          />
-        )) || null}
+        {data?.length
+          ? data?.map(({id, vegetable, rate, quantity}) => (
+              <ListItem
+                key={id}
+                id={id}
+                name={vegetable}
+                rate={rate}
+                quantity={quantity}
+              />
+            ))
+          : null}
       </ScrollView>
     </View>
   );

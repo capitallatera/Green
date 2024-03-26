@@ -7,18 +7,14 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useAppDispatch} from '../../redux/hook';
-import {
-  deleteInventory,
-  editInventory,
-  singleInventory,
-} from '../../redux/module/inventory';
+import {deleteInventory, editInventory} from '../../redux/module/inventory';
 
 type Item = {
-  _id: string;
-  name: string;
+  id: string;
+  vegetable: string;
   rate: string | number | null;
   quantity: string | number | null;
 };
@@ -44,8 +40,8 @@ const EditItem = () => {
   // const {single} = useAppSelector(inventoryState);
   const [data, setData] = useState<ViewNew>({
     item: {
-      _id: '',
-      name: '',
+      id: '',
+      vegetable: '',
       rate: '',
       quantity: '',
     },
@@ -61,11 +57,11 @@ const EditItem = () => {
   };
 
   const handleSubmit = async () => {
-    const {_id, name, rate, quantity} = data.item;
-    if (!_id || !name || !rate || !quantity) {
+    const {id, vegetable, rate, quantity} = data.item;
+    if (!id || !vegetable || !rate || !quantity) {
       return;
     }
-    const payloadBuilder = {_id, name, rate, quantity};
+    const payloadBuilder = {id, vegetable, rate, quantity};
     setData(prev => ({...prev, loader: true}));
     await dispatch(editInventory(payloadBuilder));
     setData(prev => ({...prev, loader: false}));
@@ -73,11 +69,11 @@ const EditItem = () => {
   };
 
   const handleDelete = async () => {
-    const {_id} = data.item;
-    if (!_id) {
+    const {id} = data.item;
+    if (!id) {
       return;
     }
-    const payloadBuilder = {id: _id};
+    const payloadBuilder = {id: id, isDelete: true};
     setData(prev => ({...prev, loader_delete: true}));
     await dispatch(deleteInventory(payloadBuilder));
     setData(prev => ({...prev, loader_delete: false}));
@@ -85,7 +81,7 @@ const EditItem = () => {
   };
 
   useEffect(() => {
-    if (payload?._id) {
+    if (payload?.id) {
       setData(prev => ({...prev, item: payload}));
     }
   }, [payload]);
@@ -95,15 +91,15 @@ const EditItem = () => {
     justifyContent: 'center',
     width: widthDimension,
   };
-  const {name, rate, quantity} = data.item;
+  const {vegetable, rate, quantity} = data.item;
 
   return (
     <SafeAreaView style={styles.container}>
       <TextInput
         style={{...styles.dropdown, width: widthDimension}}
         placeholder="Vegetable"
-        value={name}
-        onChangeText={(value: string) => handleInput('name', value)}
+        value={String(vegetable)}
+        onChangeText={(value: string) => handleInput('vegetable', value)}
       />
 
       <TextInput
